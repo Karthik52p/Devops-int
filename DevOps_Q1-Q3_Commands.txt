@@ -1,0 +1,164 @@
+DEVOPS LAB — COMMANDS FOR QUESTIONS 1–3
+=======================================
+
+IMPORTANT
+---------
+This is a reference sheet, not one script to run all at once. Run the commands in the relevant section, from the student-api project folder. Do not repeat setup commands blindly if the project/repository/container already exists.
+
+Before doing anything, open the project folder in VS Code, then open Terminal > New Terminal. Check the current folder with:
+
+    Get-Location
+
+If needed, change to the REAL path of your project folder (replace the example path with the folder that contains server.js, package.json, and Dockerfile):
+
+    cd "C:\path\to\student-api"
+
+
+QUESTION 1 — BACKEND API + POSTMAN
+==================================
+
+A. Initial setup (only when creating the project for the first time)
+
+    mkdir student-api
+    cd student-api
+    npm init -y
+    npm install express
+
+Create server.js in VS Code and paste the Student Management API code into it. Save the file.
+
+B. Start the API server (run from the folder containing server.js)
+
+    node server.js
+
+Keep this terminal open while testing. Expected message:
+    Server running on port 3000
+
+C. URLs to test in Postman
+
+    GET     http://localhost:3000/students
+    GET     http://localhost:3000/students/1
+    POST    http://localhost:3000/students
+    PUT     http://localhost:3000/students/1
+    PATCH   http://localhost:3000/students/1
+    DELETE  http://localhost:3000/students/1
+    GET     http://localhost:3000/students/999
+
+For POST, PUT and PATCH in Postman, choose Body > raw > JSON. Example body:
+
+    {
+      "name": "Arjun",
+      "age": 20,
+      "department": "CSE"
+    }
+
+Typical expected statuses in this project:
+    GET success:         200 OK
+    POST success:        201 Created
+    PUT/PATCH success:   200 OK
+    DELETE success:      200 OK
+    Missing student:     404 Not Found
+
+
+QUESTION 2 — GIT AND GITHUB
+===========================
+
+Run these from inside the project folder.
+
+A. Initialize and commit the project
+
+    git --version
+    git init
+    git status
+    git add .
+    git commit -m "Initial commit"
+
+If Git asks for your identity, configure your own details (one time on this computer):
+
+    git config --global user.name "Your Name"
+    git config --global user.email "you@example.com"
+
+Then run the commit command again if it did not succeed.
+
+B. Create a feature branch, make a change, commit, and merge into main
+
+    git branch -M main
+    git switch -c feature-api
+
+Create or edit a file (for example README.md) in VS Code and save it, then:
+
+    git add .
+    git commit -m "Add project documentation"
+    git switch main
+    git merge feature-api
+    git branch
+    git log --oneline
+    git status
+
+C. Push to GitHub
+
+First create a NEW EMPTY repository on GitHub and copy its HTTPS URL. Replace the example URL below with your real repository URL:
+
+    git remote add origin https://github.com/USERNAME/REPOSITORY.git
+    git push -u origin main
+    git push -u origin feature-api
+    git remote -v
+
+If 'origin' already exists, do not add it again; inspect it using git remote -v.
+If a branch/commit already exists, check git status and git log before repeating commands.
+
+Suggested .gitignore file contents (create a file named .gitignore in the project folder):
+
+    node_modules/
+    .env
+    *.log
+
+
+QUESTION 3 — DOCKER
+===================
+
+A. Check Docker is installed and the engine is running
+
+    docker --version
+    docker info
+
+B. Build the image (run from the folder containing the Dockerfile)
+
+    docker build -t student-api .
+    docker images
+
+C. Run the container and map host port 8080 to app/container port 3000
+
+    docker run -d --name student-api-container -p 8080:3000 student-api
+
+D. Verify and test
+
+    docker ps
+
+Open this URL in a browser or use it for a GET request in Postman:
+
+    http://localhost:8080/students
+
+Useful troubleshooting/management commands:
+
+    docker logs student-api-container
+    docker logs -f student-api-container
+    docker stats student-api-container
+    docker stop student-api-container
+    docker rm student-api-container
+    docker rm -f student-api-container
+
+Use docker stop before docker rm when stopping/removing a running container. The -f option forcibly removes it.
+If the container name already exists, inspect it with docker ps -a, then remove it if it is no longer needed.
+
+Suggested .dockerignore file contents (create a file named .dockerignore in the project folder):
+
+    node_modules
+    .git
+    .env
+
+
+QUICK MEMORY AID
+================
+Backend:  npm install express  ->  node server.js  ->  test in Postman
+Git:      git init  ->  git add .  ->  git commit  ->  branch/merge  ->  git push
+Docker:   Dockerfile  ->  docker build  ->  docker run  ->  docker ps  ->  test localhost:8080
